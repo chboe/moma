@@ -1,0 +1,35 @@
+name: moma_appen
+description: A new Flutter project.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_tindercard: ^0.1.7
+  bordered_text: ^1.0.1
+  circular_profile_avatar: ^1.0.6
+  url_launcher: ^4.1.0
+  http: ^0.12.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - pics/download.jpg
+    - pics/movie2.jpg
+    - pics/movie3.jpg
+    - pics/download2.jpg
+    - pics/profil.jpg
+    - pics/graham.jpg
+    - pics/money.jpg
+

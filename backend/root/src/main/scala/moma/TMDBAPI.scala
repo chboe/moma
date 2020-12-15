@@ -35,17 +35,16 @@ object TMDBAPI {
 
   def fetchMovie(id: Int): Movie = {
     val jsonMovieOpt = decode[APIResponse](get("https://api.themoviedb.org/3/movie/"+id+"?api_key="+apiKey+"&language=en-US")).toOption
-    print(jsonMovieOpt)
     jsonMovieOpt.map{ jsonMovie =>
       Movie(
         jsonMovie.id.getOrElse(0),
-        jsonMovie.original_title.getOrElse("Error in loading"),
-        jsonMovie.original_language.getOrElse("Unknown"),
-        jsonMovie.overview.getOrElse("Unknown"),
+        jsonMovie.original_title.getOrElse(""),
+        jsonMovie.original_language.getOrElse(""),
+        jsonMovie.overview.getOrElse(""),
         jsonMovie.genres.toList.flatten.flatMap(_.name),
-        jsonMovie.release_date.getOrElse("Unknown"),
+        jsonMovie.release_date.getOrElse(""),
         jsonMovie.runtime.getOrElse(0),
-        "http://image.tmdb.org/t/p/w500"+jsonMovie.poster_path.getOrElse("Unknown")
+        "http://image.tmdb.org/t/p/w500"+jsonMovie.poster_path.getOrElse("")
       )
     }.getOrElse(
       Movie(

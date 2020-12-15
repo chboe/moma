@@ -33,7 +33,47 @@ object Main extends IOApp {
     } ~
     get {
       path("getSwipeableMovies"/ IntNumber) { id =>
-        complete(HttpEntity(ContentTypes.`application/json`, User.getSwipeableMovies(id)))
+        User.getSwipeableMovies(id)
+      }
+    } ~
+    get {
+      path("getMatches"/ IntNumber / IntNumber) { (userId, friendId) =>
+        User.getMatches(userId,friendId)
+      }
+    } ~
+    get {
+      path("dislikeMovie"/ IntNumber / IntNumber) { (userId, movieId) =>
+        User.dislikeMovie(userId,movieId)
+      }
+    } ~
+    get {
+      path("likeMovie"/ IntNumber / IntNumber) { (userId, movieId) =>
+        User.likeMovie(userId,movieId)
+      }
+    } ~
+    get {
+      path("superlikeMovie"/ IntNumber / IntNumber) { (userId, movieId) =>
+        User.superlikeMovie(userId,movieId)
+      }
+    } ~
+    get {
+      path("addFriend"/ IntNumber / IntNumber) { (userId, friendId) =>
+        User.addFriend(userId, friendId)
+      }
+    } ~
+    get {
+      path("getFriendsList"/ IntNumber ) { userId =>
+        User.getFriendsList(userId)
+      }
+    } ~
+    get {
+      path("getUser"/ IntNumber ) { userId =>
+        User.getUser(userId)
+      }
+    } ~
+    get {
+      path("login"/ Segment / Segment ) { (username, password) =>
+        User.login(username, password)
       }
     }
 
