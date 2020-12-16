@@ -22,11 +22,11 @@ void movieBioDialog(BuildContext context, Movie movie) {
   showDialog(context: context, builder: (BuildContext context) => alert);
 }
 
-String genreToString(List<String> genre){
+String genreToString(List<dynamic> genre){
   String result = "";
   //int n = genre.length;
   for(int i = 0; i< genre.length ; i++){
-      result = result + genre[i] +", ";
+      result = result + genre[i].toString() +", ";
   }
-  return result.substring(0, result.length-2); //remove the last commar and space
+  return result.substring(0, result.length-2); //remove the last commas and space
 }

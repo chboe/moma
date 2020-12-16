@@ -18,6 +18,7 @@ case class Matches(
                   )
 
 case class PublicUser(
+                       id: Int,
                        username: String,
                        name: String,
                        email: String,
@@ -74,7 +75,7 @@ object User{
       liked1 <- sql"SELECT liked FROM USERS WHERE id=$userId".query[String].to[List].transact(xa).unsafeRunSync()
       liked2 <- sql"SELECT liked FROM USERS WHERE id=$friendId".query[String].to[List].transact(xa).unsafeRunSync()
     } yield {
-      decode[List[Int]](liked1).getOrElse(List.empty).filter( x=> (decode[List[Int]](liked2).getOrElse(List.empty)).contains(x))
+      decode[List[Int]](liked1).getOrElse(List.empty).filter( x=> (decode[List[Int]](liked2).getOrElse(List.empty)).contains(x)).map(TMDBAPI.fetchMovie)
     }
 
     val res = matches.flatten.asJson.noSpaces
@@ -129,11 +130,12 @@ object User{
       complete(HttpEntity(ContentTypes.`application/json`,res))
     }
   }
-  def addFriend(userId: Int, friendId: Int): StandardRoute = {
+  def addFriend(userId: Int, friendUsername: String): StandardRoute = {
     val x = for{
       q1 <- sql"SELECT friendids FROM users WHERE id=$userId".query[String].to[List].transact(xa)
-      friendlist = (decode[List[Int]](q1.head).getOrElse(List.empty):+friendId).distinct.asJson.noSpaces
-      q2 <- sql"UPDATE users SET friendids = $friendlist WHERE id=$userId".update.run.transact(xa)
+      q2 <- sql"SELECT id FROM users WHERE username=$friendUsername".query[Int].to[List].transact(xa)
+      friendlist = (decode[List[Int]](q1.head).getOrElse(List.empty)++q2).distinct.asJson.noSpaces
+      q3 <- sql"UPDATE users SET friendids = $friendlist WHERE id=$userId".update.run.transact(xa)
     } yield {
       q2
     }
@@ -158,12 +160,13 @@ object User{
   }
 
   def getUserHelper(userId: Int):Option[PublicUser] = {
-    val q1 = sql"SELECT username, name, email, picture FROM users WHERE id = $userId"
+    val q1 = sql"SELECT id, username, name, email, picture FROM users WHERE id = $userId"
     q1.query[PublicUser].to[List].transact(xa).unsafeRunSync().headOption
   }
 
   def getUser(userId: Int): StandardRoute = {
     val user = getUserHelper(userId).toList
+    println(user)
     if (user.isEmpty) {
       failWith(new RuntimeException("No user found!"))
     } else {
@@ -172,8 +175,15 @@ object User{
     }
   }
 
+  def getLikedMovies(userId: Int): StandardRoute = {
+    val q1 = sql"SELECT liked FROM users WHERE id = $userId"
+    val likedList = decode[List[Int]](q1.query[String].to[List].transact(xa).unsafeRunSync().head).getOrElse(List.empty)
+    val res = likedList.map{x => TMDBAPI.fetchMovie(x)}.asJson.noSpaces
+    complete(HttpEntity(ContentTypes.`application/json`, res))
+  }
+
   def login(username: String, password: String): StandardRoute = {
-    val q1 = sql"SELECT username, name, email, picture FROM users WHERE username = $username AND password = $password".query[PublicUser].to[List].transact(xa).unsafeRunSync()
+    val q1 = sql"SELECT id, username, name, email, picture FROM users WHERE username = $username AND password = $password".query[PublicUser].to[List].transact(xa).unsafeRunSync()
     if(q1.isEmpty){
       failWith(new RuntimeException("No user found!"))
     } else {

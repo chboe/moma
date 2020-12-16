@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:moma_appen/profile.dart';
 import 'main.dart';
-
 
 void main() => runApp(new MyApp());
 
@@ -46,11 +47,6 @@ class _LoginPageState extends State<LoginPage> {
 
   void _passwordListen() {
     _password = _passwordFilter.text;
-  }
-
-  // Swap between register and login forms
-  void _formChange() async {
-
   }
 
   @override
@@ -137,28 +133,25 @@ class _LoginPageState extends State<LoginPage> {
 
   // These functions can self contain any user auth logic required, they all have access to _email and _password
   void _login() async {
-    print('The user wants to login with $_username and $_password');
-
-    var url = 'localhost:8080/login/$_username/$_password';
+    var url = 'http://10.0.2.2:8080/login/$_username/$_password';
     var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
 
-    if(_username == "admin") {
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) => ExampleHomePage()
+    if(response.statusCode==200){
+      Profile loggedInAs = Profile.fromJson(jsonDecode(response.body));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainPage(loggedInAs:loggedInAs)
         )
       );
     }
-  }
 
-  void _createAccount() {
-    print('The user wants to create an account with $_username and $_password');
-
-  }
-
-  void _passwordReset() {
-    print("The user wants a password reset request sent to $_username");
+    /*if(_username == "admin") {
+      Navigator.push(context, MaterialPageRoute(
+          builder: (context) => MainPage()
+        )
+      );
+    }*/
   }
 
   //Not implemented yet

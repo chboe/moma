@@ -57,8 +57,8 @@ object Main extends IOApp {
       }
     } ~
     get {
-      path("addFriend"/ IntNumber / IntNumber) { (userId, friendId) =>
-        User.addFriend(userId, friendId)
+      path("addFriend"/ IntNumber / Segment) { (userId, friendUsername) =>
+        User.addFriend(userId, friendUsername)
       }
     } ~
     get {
@@ -74,6 +74,11 @@ object Main extends IOApp {
     get {
       path("login"/ Segment / Segment ) { (username, password) =>
         User.login(username, password)
+      }
+    } ~
+    get {
+      path("getLiked"/ IntNumber) { (userId) =>
+        User.getLikedMovies(userId)
       }
     }
 
