@@ -3,8 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:moma_appen/profile.dart';
 import 'main.dart';
+import 'register.dart';
 
 void main() => runApp(new MyApp());
+
+FlatButton flatButtonHelper(String text, Function goToPage) {
+  return new FlatButton(
+    child: new Text(
+      text,
+      style: TextStyle(
+        color: Colors.blue,
+        fontSize: 14,
+      ),
+    ),
+    onPressed: goToPage,
+  );
+}
+
+TextField textFieldHelper(String text, bool obscure, TextEditingController controller) {
+  return new TextField(
+    controller: controller,
+    obscureText: obscure,
+    decoration: new InputDecoration(
+      labelText: text,
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -156,9 +180,9 @@ class _LoginPageState extends State<LoginPage> {
 
   //Not implemented yet
   void _goToRegister() {
-    /*Navigator.push(context, MaterialPageRoute(
-        builder: (context) => ExampleHomePage()
-    ));*/
+    Navigator.push(context, MaterialPageRoute(
+        builder: (context) => RegisterPage()
+    ));
   }
 
   //Not implemented yet
@@ -167,28 +191,4 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context) => ExampleHomePage()
     ));*/
   }
-
-  TextField textFieldHelper(String text, bool obscure, TextEditingController controller) {
-    return new TextField(
-      controller: controller,
-      obscureText: obscure,
-      decoration: new InputDecoration(
-          labelText: text,
-      ),
-    );
-  }
-
-  FlatButton flatButtonHelper(String text, Function goToPage) {
-    return new FlatButton(
-      child: new Text(
-        text,
-        style: TextStyle(
-          color: Colors.blue,
-          fontSize: 14,
-        ),
-      ),
-      onPressed: goToPage,
-    );
-  }
-
 }
